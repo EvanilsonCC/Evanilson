@@ -1,0 +1,33 @@
+Conversão de Tabela Excel para SQLite(base de dados)
+Ferramenta simples para converter planilhas Excel em bancos de dados SQLite.
+
+Ferramenta simples para converter planilhas Excel em bancos de dados SQLite.
+
+📌 Funcionalidades
+- Converte qualquer Excel (.xlsx) para SQLite (.db3)
+- Mantém cabeçalhos das colunas
+- Trata encoding e caracteres especiais
+
+📌 Como usar
+python
+python converter_excel_para_sqlite.py seu_arquivo.xlsx
+----------------------------------------------------------------------------------
+import pandas as pd
+import sqlite3
+
+# Substitua pelo caminho CORRETO do seu computador
+# Exemplos:
+# caminho = r'C:\Users\SeuNome\Desktop\base_de_dados1.xlsx'  # Windows
+# caminho = r'C:\Users\SeuNome\Downloads\base_de_dados1.xlsx'  # Windows
+# caminho = '/home/seunome/Downloads/base_de_dados1.xlsx'  # Linux/Mac
+
+caminho = r'\DSA\Fundamentospython\Cap06\basededados.xlsx'  # ← AJUSTE AQUI!
+
+df = pd.read_excel(caminho)
+print(f"✅ Arquivo carregado! {len(df)} linhas")
+
+conexao = sqlite3.connect('base_de_dados_loravi.db3')
+df.to_sql('tabela_clientes', conexao, if_exists='replace', index=False)
+conexao.close()
+
+print("Banco criado com sucesso")
