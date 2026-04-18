@@ -1,0 +1,313 @@
+📊 Análise de Dados - [Análise de Venda para os  5 melhores Clientes em cada Ano]
+Análise exploratória e tratamento de dados utilizando Python (Pandas, NumPy, Matplotlib/Seaborn) para extração de insights relevantes.
+
+
+
+
+**1.1. O Problema de Negócio**
+
+A empresa tem uma planilha com registros de vendas dos últimos 5 anos e esta com dificuldade de saber quais são os seus 50 principais clientes em cada ano, com os respectivos valores.
+Mesmo que um cliente não esteja entre os 50 principais em um ano anterior, ele deve continuar listado nos anos seguintes.
+Anexei uma versão reduzida da planilha. A planilha original possui 97.000 entradas. 
+Caso tenha interesse em realizar este serviço, por favor, envie também uma proposta de preço
+
+**1.2. Objetivos do Projeto**
+
+Este projeto de análise de dados visa encontrar os 50 principais clientes em cada ano.
+## Devo ficar atento a esse pormenor de que se o cliente no ano de 2024 estava na quinta posição ele deve continuar listado na lista do ano que vem com sua respectiva posição.
+
+
+**1.3. Solução Proposta**
+
+A solução consiste em consolidar, limpar e analisar o histórico de dados de vendas da nossa planilha. Utilizando ferramentas de análise de dados (como Python com Pandas, NumPy e Matplotlib), vamos processar essas informações e criar um relatório visual que apresente as descobertas de forma clara e intuitiva para o gestor.
+
+**1.4. Resultados Esperados e Benefícios de Negócio**
+
+Ao final deste projeto, esperamos alcançar os seguintes resultados:
+
+- Saber quais são os 50 melhores clientes em cad ano.
+
+- E ao mesmo tempo saber qual o melhor em todos os anos em análise.
+
+- Marketing Direcionado e Eficaz: Sabendo quais categorias e regiões são mais lucrativas, a equipe de marketing poderá criar campanhas segmentadas, aumentando o retorno sobre o investimento (ROI).
+
+- Planejamento Estratégico: A visualização das tendências mensais permitirá um melhor planejamento financeiro, promocional e de recursos, antecipando períodos de alta e baixa demanda.
+
+- Decisões Baseadas em Dados: Substituiremos a intuição por dados concretos, criando uma cultura orientada a dados que impulsionará o crescimento sustentável do negócio.
+
+________________________________________________________________________________________________________"####
+# Importação da biblioteca para manipulação de dados em tabelas
+import pandas as pd  
+
+# Importação da biblioteca NumPy para operações matemáticas e arrays
+import numpy as np  
+
+# Importação da biblioteca Matplotlib para geração de gráficos
+import matplotlib.pyplot as plt  
+
+# Importação da biblioteca Seaborn para visualização estatística de dados
+import seaborn as sns  
+
+# Importação da biblioteca random para geração de números aleatórios
+import random  
+
+# Importação das classes datetime e timedelta para manipulação de datas e intervalos de tempo
+from datetime import datetime, timedelta  
+
+# Comando mágico do Jupyter Notebook que permite exibir gráficos diretamente no notebook
+%matplotlib inline 
+
+______________________________________________________________________________________________
+
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+import random
+
+# Fixar seed para reprodutibilidade
+np.random.seed(42)
+random.seed(42)
+
+def gerar_dados_vendas_5_anos(num_registros=97000):
+    """
+    Gera dados de vendas para os últimos 5 anos
+    """
+    
+    # Clientes (100 clientes com diferentes perfis)
+    clientes = {
+        f'Cliente_{i:03d}': {
+            'nome': f'Empresa {chr(65 + i % 26)}{i}',
+            'porte': np.random.choice(['Pequeno', 'Médio', 'Grande'], p=[0.3, 0.4, 0.3])
+        }
+        for i in range(1, 101)
+    }
+    
+    # Produtos
+    produtos = {
+        'Laptop Gamer': {'categoria': 'Eletrônicos', 'preco': 7500.00},
+        'Mouse Vertical': {'categoria': 'Acessórios', 'preco': 250.00},
+        'Teclado Mecânico': {'categoria': 'Acessórios', 'preco': 550.00},
+        'Monitor Ultrawide': {'categoria': 'Eletrônicos', 'preco': 2800.00},
+        'Cadeira Gamer': {'categoria': 'Móveis', 'preco': 1200.00},
+        'Headset 7.1': {'categoria': 'Acessórios', 'preco': 800.00},
+        'Placa de Vídeo': {'categoria': 'Hardware', 'preco': 4500.00},
+        'SSD 1TB': {'categoria': 'Hardware', 'preco': 600.00}
+    }
+    
+    lista_produtos = list(produtos.keys())
+    
+    # Datas dos últimos 5 anos
+    data_fim = datetime(2026, 4, 18)
+    data_inicio = datetime(2021, 1, 1)
+    
+    dados_vendas = []
+    
+    print(f"Gerando {num_registros} registros de vendas para 5 anos...")
+    
+    # CORREÇÃO: Separar clientes por porte ANTES do loop
+    clientes_pequenos = [c for c in clientes if clientes[c]['porte'] == 'Pequeno']
+    clientes_medios = [c for c in clientes if clientes[c]['porte'] == 'Médio']
+    clientes_grandes = [c for c in clientes if clientes[c]['porte'] == 'Grande']
+    
+    print(f"Clientes por porte: Pequeno={len(clientes_pequenos)}, Médio={len(clientes_medios)}, Grande={len(clientes_grandes)}")
+    
+    for i in range(num_registros):
+        
+        # CORREÇÃO: Selecionar porte do cliente primeiro (10% pequeno, 30% médio, 60% grande)
+        porte_selecionado = np.random.choice(['Pequeno', 'Médio', 'Grande'], p=[0.1, 0.3, 0.6])
+        
+        # Depois selecionar um cliente aleatório do porte escolhido
+        if porte_selecionado == 'Pequeno':
+            id_cliente = np.random.choice(clientes_pequenos)
+        elif porte_selecionado == 'Médio':
+            id_cliente = np.random.choice(clientes_medios)
+        else:  # Grande
+            id_cliente = np.random.choice(clientes_grandes)
+        
+        produto = np.random.choice(lista_produtos, p=[0.15, 0.15, 0.1, 0.1, 0.1, 0.1, 0.15, 0.15])
+        
+        quantidade = np.random.randint(1, 20)
+        
+        # Data aleatória nos últimos 5 anos
+        dias_desde_inicio = (data_fim - data_inicio).days
+        data_pedido = data_inicio + timedelta(days=np.random.randint(0, dias_desde_inicio))
+        ano = data_pedido.year
+        
+        # Preço com pequena variação
+        preco_base = produtos[produto]['preco']
+        preco_final = preco_base * np.random.uniform(0.95, 1.05)
+        
+        valor_total = preco_final * quantidade
+        
+        dados_vendas.append({
+            'ID_Pedido': 100000 + i,
+            'Data_Pedido': data_pedido,
+            'Ano': ano,
+            'ID_Cliente': id_cliente,
+            'Nome_Cliente': clientes[id_cliente]['nome'],
+            'Porte_Cliente': clientes[id_cliente]['porte'],
+            'Produto': produto,
+            'Categoria': produtos[produto]['categoria'],
+            'Quantidade': quantidade,
+            'Preco_Unitario': round(preco_final, 2),
+            'Valor_Total': round(valor_total, 2)
+        })
+        
+        if (i + 1) % 10000 == 0:
+            print(f"  {i+1} registros gerados...")
+    
+    df = pd.DataFrame(dados_vendas)
+    print(f"Geração concluída! {len(df)} registros criados.")
+    
+    # Verificar distribuição real dos portes
+    print("\nDistribuição real dos clientes nas vendas:")
+    print(df['Porte_Cliente'].value_counts(normalize=True))
+    
+    return df
+
+# Gerar os dados
+df_vendas = gerar_dados_vendas_5_anos(97000)
+print(f"\nPeríodo: {df_vendas['Data_Pedido'].min()} a {df_vendas['Data_Pedido'].max()}")
+print(f"Anos: {sorted(df_vendas['Ano'].unique())}")
+print(f"\nPrimeiras linhas do DataFrame:")
+print(df_vendas.head())
+_____________________________________________________________________________________________________
+Análisando os 5 melhores Clientes
+______________________________________________________________________________________________________
+import pandas as pd
+import matplotlib.pyplot as plt
+
+def top_5_clientes_por_ano(df):
+    """
+    Mostra os 5 melhores clientes (maior valor de compras) por ano
+    """
+    
+    # Lista de anos disponíveis
+    anos = sorted(df['Ano'].unique())
+    
+    print("="*80)
+    print("TOP 5 CLIENTES POR ANO (MAIOR VALOR DE COMPRAS)")
+    print("="*80)
+    
+    # Dicionário para armazenar os top 5 de cada ano
+    top5_por_ano = {}
+    
+    for ano in anos:
+        # Filtrar dados do ano
+        df_ano = df[df['Ano'] == ano]
+        
+        # Agrupar por cliente e somar valor total
+        vendas_por_cliente = df_ano.groupby(['ID_Cliente', 'Nome_Cliente', 'Porte_Cliente']).agg({
+            'Valor_Total': 'sum',
+            'ID_Pedido': 'count'
+        }).rename(columns={'ID_Pedido': 'Numero_Pedidos'}).reset_index()
+        
+        # Ordenar por valor total e pegar top 5
+        top_5 = vendas_por_cliente.nlargest(5, 'Valor_Total').reset_index(drop=True)
+        top_5['Rank'] = range(1, 6)
+        
+        # Armazenar
+        top5_por_ano[ano] = top_5
+        
+        # Exibir resultados
+        print(f"\n{'='*80}")
+        print(f"ANO {ano}")
+        print(f"{'='*80}")
+        print(f"Total de vendas no ano: R$ {df_ano['Valor_Total'].sum():,.2f}")
+        print(f"\n{'Rank':<6} {'ID_Cliente':<15} {'Nome_Cliente':<30} {'Porte':<10} {'Valor_Total':<15} {'Pedidos'}")
+        print(f"{'-'*80}")
+        
+        for _, row in top_5.iterrows():
+            print(f"{row['Rank']:<6} {row['ID_Cliente']:<15} {row['Nome_Cliente']:<30} {row['Porte_Cliente']:<10} R$ {row['Valor_Total']:>12,.2f}  {row['Numero_Pedidos']:>3}")
+        
+        # Mostrar quanto os top 5 representam do total
+        percentual = (top_5['Valor_Total'].sum() / df_ano['Valor_Total'].sum()) * 100
+        print(f"\nTop 5 clientes representam: {percentual:.1f}% das vendas do ano")
+    
+    return top5_por_ano
+
+def visualizar_top5_simplificado(top5_por_ano):
+    """
+    Visualização simples dos top 5 clientes por ano
+    """
+    
+    anos = list(top5_por_ano.keys())
+    
+    # Criar figura
+    fig, axes = plt.subplots(2, 3, figsize=(18, 12))
+    axes = axes.flatten()
+    
+    for idx, ano in enumerate(anos):
+        if idx < len(axes):
+            ax = axes[idx]
+            
+            top5 = top5_por_ano[ano]
+            
+            # Criar barras horizontais
+            cores = plt.cm.Blues_r(range(50, 250, 40))
+            barras = ax.barh(range(5), top5['Valor_Total'], color=cores)
+            
+            # Adicionar valores nas barras
+            for i, (valor, cliente) in enumerate(zip(top5['Valor_Total'], top5['ID_Cliente'])):
+                ax.text(valor, i, f'  R$ {valor:,.0f}', va='center', fontsize=9)
+            
+            ax.set_yticks(range(5))
+            ax.set_yticklabels([f"{row['ID_Cliente']}\n({row['Nome_Cliente'][:15]})" for _, row in top5.iterrows()])
+            ax.set_xlabel('Valor Total de Compras (R$)')
+            ax.set_title(f'Ano {ano} - Top 5 Clientes', fontweight='bold')
+            ax.invert_yaxis()
+            ax.grid(True, alpha=0.3, axis='x')
+    
+    # Esconder subplots não utilizados
+    for idx in range(len(anos), len(axes)):
+        axes[idx].set_visible(False)
+    
+    plt.suptitle('TOP 5 CLIENTES POR ANO (Maior Valor de Compras)', fontsize=16, fontweight='bold')
+    plt.tight_layout()
+    plt.show()
+
+# Executar a análise
+print("Analisando os 5 melhores clientes por ano...")
+print("-" * 80)
+
+# Obter top 5 clientes por ano
+top5_clientes = top_5_clientes_por_ano(df_vendas)
+
+# Visualizar gráfico
+visualizar_top5_simplificado(top5_clientes)
+
+# Criar uma tabela resumo consolidada
+print("\n" + "="*80)
+print("TABELA RESUMO - TOP 5 CLIENTES POR ANO (APENAS IDs)")
+print("="*80)
+
+# Criar DataFrame resumo
+resumo_anos = []
+for ano, df_top5 in top5_clientes.items():
+    for _, row in df_top5.iterrows():
+        resumo_anos.append({
+            'Ano': ano,
+            'Rank': row['Rank'],
+            'ID_Cliente': row['ID_Cliente'],
+            'Nome_Cliente': row['Nome_Cliente'],
+            'Porte': row['Porte_Cliente'],
+            'Valor_Total': row['Valor_Total']
+        })
+
+df_resumo = pd.DataFrame(resumo_anos)
+
+# Mostrar tabela pivotada (IDs por ano)
+tabela_ids = df_resumo.pivot_table(
+    index='Rank', 
+    columns='Ano', 
+    values='ID_Cliente',
+    aggfunc='first'
+)
+
+print("\nIDs dos Clientes por Ano e Rank:")
+print(tabela_ids)
+
+print("\n" + "="*80)
+print("DETALHES COMPLETOS:")
+print("="*80)
+print(df_resumo[['Ano', 'Rank', 'ID_Cliente', 'Nome_Cliente', 'Porte', 'Valor_Total']].to_string(index=False))
